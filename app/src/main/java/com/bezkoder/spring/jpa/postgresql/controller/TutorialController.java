@@ -42,9 +42,12 @@ public class TutorialController {
 			if (tutorials.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			}
+			logger.info("Getting Tutorial all");
 
 			return new ResponseEntity<>(tutorials, HttpStatus.OK);
 		} catch (Exception e) {
+			logger.ERROR("[ERROR] Getting Tutorial all");
+
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -54,8 +57,11 @@ public class TutorialController {
 		Optional<Tutorial> tutorialData = tutorialRepository.findById(id);
 
 		if (tutorialData.isPresent()) {
+			logger.info("Getting user: {}", user);
 			return new ResponseEntity<>(tutorialData.get(), HttpStatus.OK);
 		} else {
+				logger.ERROR("[ERROR] Getting user: {}", user);
+
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -65,8 +71,11 @@ public class TutorialController {
 		try {
 			Tutorial _tutorial = tutorialRepository
 					.save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(), false));
+					logger.info("Creating user: {}", user);
 			return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
 		} catch (Exception e) {
+			logger.ERROR("Creating user: {}", user);
+
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -80,8 +89,10 @@ public class TutorialController {
 			_tutorial.setTitle(tutorial.getTitle());
 			_tutorial.setDescription(tutorial.getDescription());
 			_tutorial.setPublished(tutorial.isPublished());
+			logger.info("Updating user id: {}", id);
 			return new ResponseEntity<>(tutorialRepository.save(_tutorial), HttpStatus.OK);
 		} else {
+						logger.ERROR("Updating user id: {}", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -90,8 +101,11 @@ public class TutorialController {
 	public ResponseEntity<HttpStatus> deleteTutorial(@PathVariable("id") long id) {
 		try {
 			tutorialRepository.deleteById(id);
+			logger.info("Deleting user id: {}", id);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} catch (Exception e) {
+									logger.ERROR("Deleting user id: {}", id);
+
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -100,6 +114,7 @@ public class TutorialController {
 	public ResponseEntity<HttpStatus> deleteAllTutorials() {
 		try {
 			tutorialRepository.deleteAll();
+			logger.info("Deleting all users");
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

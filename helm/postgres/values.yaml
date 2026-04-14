@@ -1,0 +1,8 @@
+auth:
+  username: postgres
+  password: postgres
+  database: asgn09db
+
+primary:
+  persistence:
+    enabled: true
