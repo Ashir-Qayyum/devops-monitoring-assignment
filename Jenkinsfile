@@ -39,7 +39,7 @@ pipeline {
             steps {
                 copyArtifact(
                     GRADLE_CONTAINER,
-                    "/tmp/app/build/libs/asgn-09-java-app-1.0.jar",
+                    "/tmp/app/app/build/libs/asgn-09-java-app-1.0.jar",
                     "app/build/libs/app.jar"
                 )
             }
@@ -93,6 +93,7 @@ pipeline {
             }
         }
     }
+    
 
     post {
         success {
