@@ -8,7 +8,7 @@ pipeline {
         IMAGE_NAME = "ashirqayyum/asgn-09-java-app:latest"
 
        
-        REPO_URL = ""
+        REPO_URL = "https://github.com/Ashir-Qayyum/devops-monitoring-assignment.git"
 
         SONAR_HOST = "http://172.20.0.3:9000"
         SONAR_TOKEN = "sqa_57f41c25ea3f91d254798548ee800fe34b9a7977"
