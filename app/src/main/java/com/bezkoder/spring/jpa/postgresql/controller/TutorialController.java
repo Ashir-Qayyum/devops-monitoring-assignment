@@ -7,27 +7,41 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.bezkoder.spring.jpa.postgresql.model.Tutorial;
 import com.bezkoder.spring.jpa.postgresql.repository.TutorialRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api")
 public class TutorialController {
 
+	private static final Logger logger = LoggerFactory.getLogger(TutorialController.class);
+
+	private final Counter createCounter;
+	private final Counter readCounter;
+	private final Counter updateCounter;
+	private final Counter deleteCounter;
+
 	@Autowired
 	TutorialRepository tutorialRepository;
+
+	@Autowired
+	public TutorialController(TutorialRepository tutorialRepository, MeterRegistry meterRegistry) {
+		this.tutorialRepository = tutorialRepository;
+
+		this.createCounter = meterRegistry.counter("tutorial_create_total");
+		this.readCounter = meterRegistry.counter("tutorial_read_total");
+		this.updateCounter = meterRegistry.counter("tutorial_update_total");
+		this.deleteCounter = meterRegistry.counter("tutorial_delete_total");
+	}
 
 	@GetMapping("/tutorials")
 	public ResponseEntity<List<Tutorial>> getAllTutorials(@RequestParam(required = false) String title) {
@@ -42,12 +56,14 @@ public class TutorialController {
 			if (tutorials.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			}
-			logger.info("Getting Tutorial all");
+
+			readCounter.increment();
+			logger.info("Getting all tutorials");
 
 			return new ResponseEntity<>(tutorials, HttpStatus.OK);
-		} catch (Exception e) {
-			logger.ERROR("[ERROR] Getting Tutorial all");
 
+		} catch (Exception e) {
+			logger.error("Error getting tutorials");
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -57,11 +73,11 @@ public class TutorialController {
 		Optional<Tutorial> tutorialData = tutorialRepository.findById(id);
 
 		if (tutorialData.isPresent()) {
-			logger.info("Getting user: {}", user);
+			readCounter.increment();
+			logger.info("Getting tutorial with id: {}", id);
 			return new ResponseEntity<>(tutorialData.get(), HttpStatus.OK);
 		} else {
-				logger.ERROR("[ERROR] Getting user: {}", user);
-
+			logger.error("Tutorial not found with id: {}", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -71,11 +87,14 @@ public class TutorialController {
 		try {
 			Tutorial _tutorial = tutorialRepository
 					.save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(), false));
-					logger.info("Creating user: {}", user);
-			return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
-		} catch (Exception e) {
-			logger.ERROR("Creating user: {}", user);
 
+			createCounter.increment();
+			logger.info("Creating tutorial");
+
+			return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
+
+		} catch (Exception e) {
+			logger.error("Error creating tutorial");
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -89,10 +108,14 @@ public class TutorialController {
 			_tutorial.setTitle(tutorial.getTitle());
 			_tutorial.setDescription(tutorial.getDescription());
 			_tutorial.setPublished(tutorial.isPublished());
-			logger.info("Updating user id: {}", id);
+
+			updateCounter.increment();
+			logger.info("Updating tutorial id: {}", id);
+
 			return new ResponseEntity<>(tutorialRepository.save(_tutorial), HttpStatus.OK);
+
 		} else {
-						logger.ERROR("Updating user id: {}", id);
+			logger.error("Error updating tutorial id: {}", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -101,11 +124,14 @@ public class TutorialController {
 	public ResponseEntity<HttpStatus> deleteTutorial(@PathVariable("id") long id) {
 		try {
 			tutorialRepository.deleteById(id);
-			logger.info("Deleting user id: {}", id);
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		} catch (Exception e) {
-									logger.ERROR("Deleting user id: {}", id);
 
+			deleteCounter.increment();
+			logger.info("Deleting tutorial id: {}", id);
+
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+		} catch (Exception e) {
+			logger.error("Error deleting tutorial id: {}", id);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -114,12 +140,16 @@ public class TutorialController {
 	public ResponseEntity<HttpStatus> deleteAllTutorials() {
 		try {
 			tutorialRepository.deleteAll();
-			logger.info("Deleting all users");
+
+			deleteCounter.increment();
+			logger.info("Deleting all tutorials");
+
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
 		} catch (Exception e) {
+			logger.error("Error deleting all tutorials");
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
 	}
 
 	@GetMapping("/tutorials/published")
@@ -130,10 +160,13 @@ public class TutorialController {
 			if (tutorials.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			}
+
+			readCounter.increment();
 			return new ResponseEntity<>(tutorials, HttpStatus.OK);
+
 		} catch (Exception e) {
+			logger.error("Error getting published tutorials");
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
 }
