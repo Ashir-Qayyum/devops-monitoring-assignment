@@ -47,7 +47,7 @@ pipeline {
 
         stage('Gradle Sonar Analysis') {
             steps {
-                gradleSonar(GRADLE_CONTAINER, SONAR_HOST, SONAR_TOKEN)
+                gradleSonar(GRADLE_CONTAINER, SONAR_HOST, SONAR_TOKEN, PROJECT_KEY)
             }
         }
 
