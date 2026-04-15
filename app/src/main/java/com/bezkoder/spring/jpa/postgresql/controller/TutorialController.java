@@ -66,6 +66,7 @@ public class TutorialController {
 			logger.error("Error getting tutorials");
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		
 	}
 
 	@GetMapping("/tutorials/{id}")
@@ -80,7 +81,7 @@ public class TutorialController {
 			logger.error("Tutorial not found with id: {}", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		
+
 	}
 
 	@PostMapping("/tutorials")
