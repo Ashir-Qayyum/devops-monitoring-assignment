@@ -1,6 +1,6 @@
 def call(sonarHost, sonarToken, projectKey) {
     sh """
-    sleep 30
+    sleep 60
 
     STATUS=\$(curl -s -u ${sonarToken}: \
     ${sonarHost}/api/qualitygates/project_status?projectKey=${projectKey} \
