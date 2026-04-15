@@ -80,6 +80,7 @@ public class TutorialController {
 			logger.error("Tutorial not found with id: {}", id);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+		
 	}
 
 	@PostMapping("/tutorials")
