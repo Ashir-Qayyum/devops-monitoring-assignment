@@ -3,7 +3,7 @@ def call(repoUrl, container) {
     docker exec ${container} bash -c '
         rm -rf /tmp/app &&
         git clone ${repoUrl} /tmp/app &&
-        cd /tmp/app &&
+        cd /tmp/app/app &&
         ./gradlew clean build
     '
     """
