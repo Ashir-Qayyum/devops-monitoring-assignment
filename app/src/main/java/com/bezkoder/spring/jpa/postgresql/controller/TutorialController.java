@@ -118,6 +118,7 @@ public class TutorialController {
 
 		} else {
 			logger.error("Error updating tutorial id: {}", id);
+			
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
