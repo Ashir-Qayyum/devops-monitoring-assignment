@@ -8,6 +8,7 @@
 
 def call(imageName, workspaceDir) {
     sh """
-    docker build -t ${imageName} -f ${workspaceDir}/Dockerfile ${workspaceDir}
+    cd ${workspaceDir}
+    docker build -t ${imageName} .
     """
 }
