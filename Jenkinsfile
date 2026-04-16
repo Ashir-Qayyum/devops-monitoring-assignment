@@ -10,7 +10,7 @@ pipeline {
        
         REPO_URL = "https://github.com/Ashir-Qayyum/devops-monitoring-assignment.git"
 
-        SONAR_HOST = "http://172.20.0.3:9000"
+        SONAR_HOST = "http://172.20.0.2:9000"
         SONAR_TOKEN = "sqa_57f41c25ea3f91d254798548ee800fe34b9a7977"
         PROJECT_KEY = "asgn-09-java-app"
 
@@ -19,6 +19,7 @@ pipeline {
         DEPLOY_SERVER = "10.4.85.6"
         HELM_CHART_PATH = "/Users/mashir/Documents/DevOps Asgn 09 - Monitoring/devops-monitoring-assignment/helm/java-app"
     }
+
 
 
     stages {
