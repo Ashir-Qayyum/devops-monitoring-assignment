@@ -4,11 +4,8 @@ def call(user, server, key, image, release, chartPath) {
         export PATH=\\$PATH:/usr/local/bin
         
 
-        helm upgrade --install asgn-09-java-app helm/java-app --force
+        helm upgrade --install ${release} '${chartPath}' \
+        --set image.repository=${image}
     "
     """
 }
-
-
-        // helm upgrade --install ${release} '${chartPath}' \
-        // --set image.repository=${image}
